@@ -1,0 +1,66 @@
+#include "plugin.h"
+#include <vector>
+#include <filesystem>
+
+using namespace plugin;
+using namespace std;
+using namespace std::filesystem;
+
+enum SearchPathFlags
+{
+    SEARCHPATH_ADD_TO_TAIL, ///< Put this search location after existing locations
+    SEARCHPATH_ADD_TO_HEAD  ///< Put this search location before the existing locations
+};
+
+path GetIniSearchPath(wstring const &key) {
+    wchar_t buf[MAX_PATH];
+    GetPrivateProfileStringW(L"SearchPaths", key.c_str(), L"", buf, MAX_PATH, FIFA::GameDirPath(L"plugins\\AssetLoader.ini").c_str());
+    return path(ToUTF8(buf));
+}
+
+uintptr_t gSetSearchPath = 0;
+
+void METHOD FileSysManager_SetSearchPath(void *t, DUMMY_ARG, char const *searchPath) {
+    vector<path> searchPaths;
+    path s = searchPath;
+    for (size_t i = 1; i <= 10; i++) {
+        auto p = GetIniSearchPath(Format(L"Path%d", i));
+        if (!p.is_absolute())
+            p = s / p;
+        if (find(searchPaths.begin(), searchPaths.end(), p) == searchPaths.end())
+            searchPaths.push_back(p);
+    }
+    if (find(searchPaths.begin(), searchPaths.end(), s) == searchPaths.end())
+        searchPaths.push_back(searchPath);
+    string newSearchPath;
+    bool first = true;
+    for (auto const &p : searchPaths) {
+        if (first)
+            first = false;
+        else
+            newSearchPath += ';';
+        newSearchPath += p.string();
+    }
+    CallMethodDynGlobal(gSetSearchPath, t, newSearchPath.c_str());
+}
+
+class FifaAssetLoader {
+public:
+    FifaAssetLoader() {
+        if (!CheckPluginName(Magic<'A','s','s','e','t','L','o','a','d','e','r','.','a','s','i'>()))
+            return;
+        auto v = FIFA::GetAppVersion();
+        switch (v.id()) {
+        case ID_FIFA13_1700_RLD:
+            patch::SetUChar(0x1299B3E + 1, SEARCHPATH_ADD_TO_TAIL);
+            patch::SetUChar(0x1299B81 + 1, SEARCHPATH_ADD_TO_TAIL);
+            gSetSearchPath = patch::RedirectCall(0x1299A0C, FileSysManager_SetSearchPath);
+            break;
+        case ID_FIFA13_1800:
+            patch::SetUChar(0x129EADE + 1, SEARCHPATH_ADD_TO_TAIL);
+            patch::SetUChar(0x129EB21 + 1, SEARCHPATH_ADD_TO_TAIL);
+            gSetSearchPath = patch::RedirectCall(0x129E9AC, FileSysManager_SetSearchPath);
+            break;
+        }
+    }
+} fifaAssetLoader;
