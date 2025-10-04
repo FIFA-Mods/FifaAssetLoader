@@ -61,6 +61,27 @@ public:
             patch::SetUChar(0x129EB21 + 1, SEARCHPATH_ADD_TO_TAIL);
             gSetSearchPath = patch::RedirectCall(0x129E9AC, FileSysManager_SetSearchPath);
             break;
+        case ID_FIFA12_1700:
+            patch::SetUChar(0xB9BCB5 + 1, SEARCHPATH_ADD_TO_TAIL);
+            patch::SetUChar(0xB9BCF8 + 1, SEARCHPATH_ADD_TO_TAIL);
+            gSetSearchPath = patch::RedirectCall(0xB9BB62, FileSysManager_SetSearchPath);
+            break;
+        case ID_FIFA12_1500_SKD:
+            patch::SetUChar(0xB99FB5 + 1, SEARCHPATH_ADD_TO_TAIL);
+            patch::SetUChar(0xB99FF8 + 1, SEARCHPATH_ADD_TO_TAIL);
+            gSetSearchPath = patch::RedirectCall(0xB99E62, FileSysManager_SetSearchPath);
+            break;
+        case ID_FIFA12_1000_RLD:
+            patch::SetUChar(0x516085 + 1, SEARCHPATH_ADD_TO_TAIL);
+            patch::SetUChar(0x5160C8 + 1, SEARCHPATH_ADD_TO_TAIL);
+            gSetSearchPath = patch::RedirectCall(0x515F32, FileSysManager_SetSearchPath);
+            break;
+        case ID_FIFA11_1010_RLD:
+        case ID_FIFA11_1010:
+            patch::SetUChar(0x8E8E0C + 1, SEARCHPATH_ADD_TO_TAIL);
+            patch::SetUChar(0x8E8E4F + 1, SEARCHPATH_ADD_TO_TAIL);
+            gSetSearchPath = patch::RedirectCall(0x8E8D11, FileSysManager_SetSearchPath);
+            break;
         }
     }
 } fifaAssetLoader;
