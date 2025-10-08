@@ -45,21 +45,6 @@ void METHOD FileSysManager_SetSearchPath(void *t, DUMMY_ARG, char const *searchP
     CallMethodDynGlobal(gSetSearchPath, t, newSearchPath.c_str());
 }
 
-void METHOD OnAddSearchLocation(void *t, DUMMY_ARG, const char *NewLocation, unsigned int flags) {
-    CallMethod<0xB71EF0>(t, NewLocation, flags);
-    DebugPrint(Format("AddedSearchLocation: %s, %s\n", NewLocation, flags ? "head" : "tail"));
-}
-
-void METHOD OnSetSearchPath(void *t, DUMMY_ARG, const char *p) {
-    CallMethod<0xB71EE0>(t, p);
-    DebugPrint(Format("SetSearchPath: %s\n", p));
-}
-
-void METHOD OnUpdateSearchPath(void *t, DUMMY_ARG, const char *p) {
-    CallMethod<0xB71DE0>(t, p);
-    DebugPrint(Format("Search path updated: %s\n", p));
-}
-
 class FifaAssetLoader {
 public:
     FifaAssetLoader() {
@@ -88,21 +73,8 @@ public:
             gSetSearchPath = patch::RedirectCall(0xB99E62, FileSysManager_SetSearchPath);
 
 
-            //patch::RedirectCall(0xB3FF3C, OnAddSearchLocation);
-            //patch::RedirectCall(0xB3FFD6, OnAddSearchLocation);
-            //patch::RedirectCall(0xB99FF3, OnAddSearchLocation);
-            //patch::RedirectCall(0xB9A001, OnAddSearchLocation);
-            //patch::RedirectCall(0xCB92BE, OnAddSearchLocation);
-            //patch::RedirectCall(0xD0D132, OnAddSearchLocation);
-            //patch::RedirectCall(0xD36E5F, OnAddSearchLocation);
-            //patch::RedirectCall(0x10230EC, OnAddSearchLocation);
-            //patch::RedirectCall(0xB99E62, OnSetSearchPath);
-            //patch::RedirectCall(0xCB92A9, OnSetSearchPath);
 
-            patch::RedirectJump(0xB71EE0, OnUpdateSearchPath);
-            patch::RedirectCall(0xB7201D, OnUpdateSearchPath);
-            patch::RedirectCall(0xB721B1, OnUpdateSearchPath);
-            patch::RedirectCall(0xB726F1, OnUpdateSearchPath);
+
             break;
         case ID_FIFA12_1000_RLD:
             patch::SetUChar(0x516085 + 1, SEARCHPATH_ADD_TO_TAIL);
