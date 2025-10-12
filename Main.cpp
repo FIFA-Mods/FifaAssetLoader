@@ -52,6 +52,16 @@ public:
             return;
         auto v = FIFA::GetAppVersion();
         switch (v.id()) {
+        case ID_FIFA14_1700:
+            patch::SetUChar(0x14E10EE + 1, SEARCHPATH_ADD_TO_TAIL);
+            patch::SetUChar(0x14E1131 + 1, SEARCHPATH_ADD_TO_TAIL);
+            gSetSearchPath = patch::RedirectCall(0x14E0FBC, FileSysManager_SetSearchPath);
+            break;
+        case ID_FIFA14_1400_3DM:
+            patch::SetUChar(0x14E309E + 1, SEARCHPATH_ADD_TO_TAIL);
+            patch::SetUChar(0x14E30E1 + 1, SEARCHPATH_ADD_TO_TAIL);
+            gSetSearchPath = patch::RedirectCall(0x14E2F6C, FileSysManager_SetSearchPath);
+            break;
         case ID_FIFA13_1700_RLD:
             patch::SetUChar(0x1299B3E + 1, SEARCHPATH_ADD_TO_TAIL);
             patch::SetUChar(0x1299B81 + 1, SEARCHPATH_ADD_TO_TAIL);
@@ -71,17 +81,13 @@ public:
             patch::SetUChar(0xB99FB5 + 1, SEARCHPATH_ADD_TO_TAIL);
             patch::SetUChar(0xB99FF8 + 1, SEARCHPATH_ADD_TO_TAIL);
             gSetSearchPath = patch::RedirectCall(0xB99E62, FileSysManager_SetSearchPath);
-
-
-
-
             break;
         case ID_FIFA12_1000_RLD:
             patch::SetUChar(0x516085 + 1, SEARCHPATH_ADD_TO_TAIL);
             patch::SetUChar(0x5160C8 + 1, SEARCHPATH_ADD_TO_TAIL);
             gSetSearchPath = patch::RedirectCall(0x515F32, FileSysManager_SetSearchPath);
             break;
-        case ID_FIFA11_1010_RLD:
+        case ID_FIFA11_1010_FLT:
         case ID_FIFA11_1010:
             patch::SetUChar(0x8E8E0C + 1, SEARCHPATH_ADD_TO_TAIL);
             patch::SetUChar(0x8E8E4F + 1, SEARCHPATH_ADD_TO_TAIL);
